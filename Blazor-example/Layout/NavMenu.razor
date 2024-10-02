@@ -1,40 +1,208 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Blazor-example</a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+﻿
+    <div class="sidebar-inner slimscrollk" style="overflow: hidden; width: 100%; height: 695px;">
+        <div id="sidebar-menu" class="sidebar-menu" >
+            @* <ul> *@
+                <ul>
+                    @foreach (var item in _menuItems)
+                    {
+                    <li class="submenu-open">
+                        <h6 class="submenu-hdr" style="color: #adb5bd">@item.Title</h6>
+                        <ul>
+                            @foreach (var subItem in item.SubMenuItems)
+                            {
+                            <li class="submenu">
+                                <a href="@subItem.Url" class="@GetSubMenuCss(subItem)" @onclick="() => ToggleSubMenu(subItem)">
+                                    @if (!string.IsNullOrEmpty(subItem.Icon))
+                                    {
+                                    <i data-feather="@subItem.Icon"></i>
+                                    }
+                                    <span>@subItem.Title</span>
+                                    @if (subItem.IsSubmenu)
+                                    {
+                                    <span class="menu-arrow"></span>
+                                    }
+                                </a>
+
+                                @if (subItem.IsSubmenu && subItem.SubMenuItems != null)
+                                {
+                                <ul style="@GetDisplayStyle(subItem)">
+                                    @foreach (var nestedItem in subItem.SubMenuItems)
+                                    {
+                                    <li>
+                                        <a href="@nestedItem.Url" class="@GetActiveClass(nestedItem)">@nestedItem.Title</a>
+                                    </li>
+                                    }
+                                </ul>
+                                }
+                            </li>
+                            }
+                        </ul>
+                    </li>
+                    }
+                </ul>
+        </div>
     </div>
-</div>
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
 
-@code {
-    private bool collapseNavMenu = true;
+    @code {
+        public class MenuItem
+        {
+            public string Title { get; set; }
+            public string Icon { get; set; }
+            public string Url { get; set; } = "javascript:void(0);"; // Default URL for submenus
+            public bool IsSubmenu { get; set; }
+            public bool IsActive { get; set; }
+            public bool IsOpen { get; set; }
+            public List<MenuItem>? SubMenuItems { get; set; } // Submenu items, if any
+        }
+        
+        private bool IsMiniSidebar { get; set; } = true;  // Represents if the sidebar is in "mini" mode
+        private bool IsToggleButtonVisible { get; set; } = true;  // You can determine visibility based on your layout
+        private bool IsMouseOverSidebar { get; set; } = false;  // Represents whether the mouse is over the sidebar
+        private bool IsExpandMenu { get; set; } = false;  // Tracks if the menu should expand
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    // Define the menu structure
+    private List<MenuItem> _menuItems =
+    [
+        new MenuItem
+        {
+            Title = "Main",
+            IsSubmenu = true,
+            SubMenuItems =
+            [
+                new MenuItem
+                {
+                    Title = "Dashboard",
+                    Icon = "grid",
+                    IsSubmenu = true,
+                    IsOpen = true,
+                    SubMenuItems =
+                    [
+                        new MenuItem { Title = "Admin Dashboard", Url = "weather", IsActive = true },
+                        new MenuItem { Title = "Sales Dashboard", Url = "counter" }
+                    ]
+                },
 
-    private void ToggleNavMenu()
+                new MenuItem
+                {
+                    Title = "Application",
+                    Icon = "smartphone",
+                    IsSubmenu = true,
+                    SubMenuItems =
+                    [
+                        new MenuItem { Title = "Chat", Url = "chat.html" },
+                        new MenuItem { Title = "Calendar", Url = "calendar.html" },
+                        new MenuItem { Title = "Email", Url = "email.html" },
+                        new MenuItem { Title = "To Do", Url = "todo.html" },
+                        new MenuItem { Title = "Notes", Url = "notes.html" },
+                        new MenuItem { Title = "File Manager", Url = "file-manager.html" }
+                    ]
+                }
+            ]
+        },
+
+        new MenuItem
+        {
+            Title = "Inventory",
+            IsSubmenu = false,
+            SubMenuItems = [new MenuItem { Title = "Products", Icon = "box", Url = "product-list.html" }]
+        },
+
+        new MenuItem
+        {
+            Title = "Stock",
+            IsSubmenu = false,
+            SubMenuItems =
+            [
+                new MenuItem { Title = "Manage Stock", Icon = "package", Url = "manage-stocks.html" },
+                new MenuItem { Title = "Stock Adjustment", Icon = "clipboard", Url = "stock-adjustment.html" },
+                new MenuItem { Title = "Stock Transfer", Icon = "truck", Url = "stock-transfer.html" }
+            ]
+        }
+    ];
+
+    private void ToggleSubMenu(MenuItem item)
     {
-        collapseNavMenu = !collapseNavMenu;
+        // Check if the clicked submenu is already open
+        if (item.IsOpen)
+        {
+            // Close it if it is already open
+            item.IsOpen = false;
+        }
+        else
+        {
+            // If it's not open, close all other submenus and open this one
+            CloseAllSubMenus();
+            item.IsOpen = true;
+        }
     }
 
+    private void CloseAllSubMenus()
+    {
+        foreach (var menuItem in _menuItems)
+        {
+            if (menuItem.SubMenuItems != null)
+            {
+                foreach (var subMenuItem in menuItem.SubMenuItems)
+                {
+                    subMenuItem.IsOpen = false; // Close the submenu
+                }
+            }
+        }
+    }
+
+    private string GetSubMenuCss(MenuItem item)
+    {
+        return item.IsOpen ? "subdrop active" : string.Empty;
+    }
+
+    private string GetDisplayStyle(MenuItem item)
+    {
+        return item.IsOpen ? "display: block;" : "display: none;";
+    }
+
+    private string GetActiveClass(MenuItem item)
+    {
+        return item.IsActive ? "active" : string.Empty;
+    }
+    
+    // Method to handle mouseover event
+    private void OnMouseOver(MouseEventArgs e)
+    {
+        if (IsMiniSidebar && IsToggleButtonVisible)
+        {
+            IsMouseOverSidebar = true;
+            ExpandMenu();
+        }
+    }
+
+    // Method to handle mouseout event
+    private void OnMouseOut(MouseEventArgs e)
+    {
+        if (IsMiniSidebar && IsToggleButtonVisible)
+        {
+            IsMouseOverSidebar = false;
+            CollapseMenu();
+        }
+    }
+
+    // Expand the menu
+    private void ExpandMenu()
+    {
+        IsExpandMenu = true;
+        // Additional logic to display submenu or make UI changes can be handled here
+    }
+
+    // Collapse the menu
+    private void CollapseMenu()
+    {
+        IsExpandMenu = false;
+        // Additional logic to hide submenu or make UI changes can be handled here
+    }
+
+    // Determines the CSS class to apply based on whether the menu is expanded
+    private string GetBodyCssClass()
+    {
+        return IsExpandMenu ? "expand-menu" : string.Empty;
+    }
 }
