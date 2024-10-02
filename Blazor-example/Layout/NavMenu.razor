@@ -1,7 +1,6 @@
 ﻿
     <div class="sidebar-inner slimscrollk" style="overflow: hidden; width: 100%; height: 695px;">
         <div id="sidebar-menu" class="sidebar-menu" >
-            @* <ul> *@
                 <ul>
                     @foreach (var item in _menuItems)
                     {
@@ -14,8 +13,10 @@
                                 <a href="@subItem.Url" class="@GetSubMenuCss(subItem)" @onclick="() => ToggleSubMenu(subItem)">
                                     @if (!string.IsNullOrEmpty(subItem.Icon))
                                     {
+                                        <FeatherAperture/>
                                     <i data-feather="@subItem.Icon"></i>
                                     }
+                                    
                                     <span>@subItem.Title</span>
                                     @if (subItem.IsSubmenu)
                                     {
@@ -79,7 +80,8 @@
                     SubMenuItems =
                     [
                         new MenuItem { Title = "Admin Dashboard", Url = "weather", IsActive = true },
-                        new MenuItem { Title = "Sales Dashboard", Url = "counter" }
+                        new MenuItem { Title = "Sales Dashboard", Url = "counter" },
+                        new MenuItem { Title = "Home Dashboard", Url = "/" }
                     ]
                 },
 
@@ -169,11 +171,9 @@
     // Method to handle mouseover event
     private void OnMouseOver(MouseEventArgs e)
     {
-        if (IsMiniSidebar && IsToggleButtonVisible)
-        {
-            IsMouseOverSidebar = true;
-            ExpandMenu();
-        }
+        if (!IsMiniSidebar || !IsToggleButtonVisible) return;
+        IsMouseOverSidebar = true;
+        ExpandMenu();
     }
 
     // Method to handle mouseout event
