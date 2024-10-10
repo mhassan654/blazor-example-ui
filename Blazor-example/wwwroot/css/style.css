@@ -14974,7 +14974,7 @@ div#global-loader .whirly-loader:not(:required) {
     border-right: 1px solid transparent;
     margin-top: 0;
     z-index: 1001;
-    position: fixed;
+    /*position: fixed;*/
     top: 66px;
     bottom: 0;
     left: 0;
@@ -15918,66 +15918,6 @@ body.mini-sidebar.expand-menu .sidebar .sidebar-menu > ul > li.submenu-open ul l
     height: 16px;
 }
 
-.sidebar-settings {
-    width: 450px;
-    position: fixed;
-    top: 0;
-    right: -450px;
-    height: 100vh;
-    z-index: 10000;
-    overflow-x: hidden;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    overflow-y: scroll;
-    -webkit-transition: ease all 0.8s;
-    -ms-transition: ease all 0.8s;
-    transition: ease all 0.8s;
-}
-.sidebar-settings.show-settings {
-    right: 0;
-    -webkit-transition: ease all 0.8s;
-    -ms-transition: ease all 0.8s;
-    transition: ease all 0.8s;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-    overflow-y: scroll;
-}
-
-.sidebar-content {
-    max-width: 450px;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: #ffffff;
-    height: 100vh;
-    overflow-x: hidden;
-}
-.sidebar-content .sidebar-header {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    align-items: center;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    justify-content: space-between;
-    -webkit-justify-content: space-between;
-    -ms-flex-pack: space-between;
-    padding: 20px;
-    position: sticky;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 100;
-    background-color: #FF9F43;
-}
-.sidebar-content .sidebar-header h5 {
-    font-size: 20px;
-    color: #ffffff;
-    font-weight: 700;
-    margin-bottom: 0;
-    text-transform: uppercase;
-}
 @media (max-width: 991.98px) {
     .sidebar-content .sidebar-header h5 {
         font-size: 18px;
